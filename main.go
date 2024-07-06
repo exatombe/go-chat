@@ -65,24 +65,22 @@ func (app *application) handleChannelMessages(w http.ResponseWriter, r *http.Req
 	vars := mux.Vars(r)
 	channelID := vars["channelID"]
 
-	app.discord.AddHandlerOnce(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+	app.discord.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if m.Author.ID == s.State.User.ID || m.Author.Bot || m.ChannelID != channelID {
 			return
 		}
 
-		message := map[string]interface{}{
+		message, err := json.Marshal(map[string]interface{}{
 			"author":    m.Author.Username,
 			"content":   m.Content,
 			"channelID": m.ChannelID,
-		}
-
-		msg, err := json.Marshal(message)
+		})
 		if err != nil {
 			app.logger.Printf("Error marshalling message: %v", err)
 			return
 		}
 
-		hub.Broadcast <- msg
+		hub.Broadcast <- message
 	})
 
 	go hub.Run(channelID)
