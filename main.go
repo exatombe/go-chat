@@ -20,6 +20,7 @@ type application struct {
 	logger  *log.Logger
 	discord *discordgo.Session
 	router  *mux.Router
+	server  *http.Server
 }
 
 func main() {
@@ -30,16 +31,14 @@ func main() {
 	}
 
 	app.init()
-
-	err := app.startServer(":3000")
-	app.checkErr(err, "Error starting server")
-
+	app.startServer()
 	app.waitForShutdown()
 }
 
 func (app *application) init() {
-	err := godotenv.Load()
-	app.checkErr(err, "Error loading .env file")
+	if err := godotenv.Load(); err != nil {
+		app.logger.Fatalf("Error loading .env file: %v", err)
+	}
 
 	token := os.Getenv("DISCORD_BOT_TOKEN")
 	if token == "" {
@@ -47,7 +46,9 @@ func (app *application) init() {
 	}
 
 	discord, err := discordgo.New("Bot " + token)
-	app.checkErr(err, "Error creating Discord session")
+	if err != nil {
+		app.logger.Fatalf("Error creating Discord session: %v", err)
+	}
 
 	discord.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsAllWithoutPrivileged | discordgo.IntentsMessageContent)
 	discord.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
@@ -55,14 +56,8 @@ func (app *application) init() {
 	})
 
 	app.discord = discord
-
-	app.router = app.setupRouter()
-}
-
-func (app *application) setupRouter() *mux.Router {
-	muxer := mux.NewRouter()
-	muxer.HandleFunc("/channels/{channelID}", app.handleChannelMessages).Methods("GET")
-	return muxer
+	app.router = mux.NewRouter()
+	app.router.HandleFunc("/channels/{channelID}", app.handleChannelMessages).Methods("GET")
 }
 
 func (app *application) handleChannelMessages(w http.ResponseWriter, r *http.Request) {
@@ -70,46 +65,45 @@ func (app *application) handleChannelMessages(w http.ResponseWriter, r *http.Req
 	vars := mux.Vars(r)
 	channelID := vars["channelID"]
 
-	app.discord.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+	app.discord.AddHandlerOnce(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if m.Author.ID == s.State.User.ID || m.Author.Bot || m.ChannelID != channelID {
 			return
 		}
 
-		message, err := json.Marshal(map[string]interface{}{
+		message := map[string]interface{}{
 			"author":    m.Author.Username,
 			"content":   m.Content,
 			"channelID": m.ChannelID,
-		})
+		}
+
+		msg, err := json.Marshal(message)
 		if err != nil {
 			app.logger.Printf("Error marshalling message: %v", err)
 			return
 		}
 
-		hub.Broadcast <- message
+		hub.Broadcast <- msg
 	})
 
 	go hub.Run(channelID)
 	ws.ServeWs(hub, w, r)
 }
 
-func (app *application) startServer(addr string) error {
-	server := &http.Server{
-		Addr:    addr,
+func (app *application) startServer() {
+	app.server = &http.Server{
+		Addr:    ":3000",
 		Handler: app.router,
 	}
 
 	go func() {
-		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := app.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			app.logger.Fatalf("ListenAndServe error: %v", err)
 		}
 	}()
 
-	err := app.discord.Open()
-	if err != nil {
-		return err
+	if err := app.discord.Open(); err != nil {
+		app.logger.Fatalf("Error opening Discord session: %v", err)
 	}
-
-	return nil
 }
 
 func (app *application) waitForShutdown() {
@@ -121,21 +115,13 @@ func (app *application) waitForShutdown() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err := app.discord.Close()
-	app.checkErr(err, "Error closing Discord session")
-
-	server := &http.Server{
-		Addr:    ":3000",
-		Handler: app.router,
+	if err := app.discord.Close(); err != nil {
+		app.logger.Fatalf("Error closing Discord session: %v", err)
 	}
-	err = server.Shutdown(ctx)
-	app.checkErr(err, "Server Shutdown Failed")
+
+	if err := app.server.Shutdown(ctx); err != nil {
+		app.logger.Fatalf("Server Shutdown Failed: %v", err)
+	}
 
 	app.logger.Println("Server exited")
-}
-
-func (app *application) checkErr(err error, message string) {
-	if err != nil {
-		app.logger.Fatalf("%s: %v", message, err)
-	}
 }
