@@ -1,7 +1,7 @@
 import { DiscordMessage } from "../message";
 
 export function websocket(channelId: string) {
-  const ws = new WebSocket(`ws://localhost:3000/channels/${channelId}/gateway`);
+  const ws = new WebSocket(`wss://tchat.ketsuna.com/channels/${channelId}/gateway`);
   return ws;
 }
 
@@ -19,13 +19,15 @@ export async function sendMessage(url: string, message: string, username: string
   return response.json();
 }
 
-export async function getMessages(channelId: string): Promise<DiscordMessage[]>{
-  const response = await fetch(`http://localhost:3000/channels/${channelId}/messages`);
+export async function getMessages(channelId: string): Promise<DiscordMessage[]|false>{
+  const response = await fetch(`https://tchat.ketsuna.com/channels/${channelId}/messages`);
+  if(response.ok){
   return response.json();
+  }else return false;
 }
 
 export async function getWebhook(channelId: string) {
-  const response = await fetch(`http://localhost:3000/channels/${channelId}/webhook`, {
+  const response = await fetch(`https://tchat.ketsuna.com/channels/${channelId}/webhook`, {
     method: "POST",
   });
   return response.text();

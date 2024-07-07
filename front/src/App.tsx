@@ -114,22 +114,25 @@ function App({ script }: { script: string }) {
   const [message, setMessage] = createSignal("");
   const channelId = parsedUrl.searchParams.get("channel_id") || "";
   const [webhook, setWebhook] = createSignal("");
-
+  const [errored, setErrored] = createSignal(false);
   function scrollToBottom() {
     const chatBox = document.getElementById("chat-box") as HTMLElement;
     chatBox.scrollTop = chatBox.scrollHeight;
   }
+
+
   createEffect(() => {
+    if(channelId === "") return setErrored(true);
+
     getWebhook(channelId).then((data) => {
       setWebhook(data);
     });
     getMessages(channelId).then((data) => {
-      setMessages(data.reverse())
+      if(data){
+              setMessages(data.reverse())
+      }else setErrored(true)
     });
   }, [channelId, username()]);
-  if (channelId === "") {
-    return <div>Channel ID Not provided</div>;
-  }
 
   setTimeout(() => {
     scrollToBottom();
@@ -145,6 +148,7 @@ function App({ script }: { script: string }) {
   }
 
   createEffect(() => {
+    if(errored()) return;
     // first we need to get last messages
     // when i click on enter my message need to be send
     window.addEventListener("keydown", (e) => {
@@ -193,7 +197,8 @@ function App({ script }: { script: string }) {
             onClick={() => setChatBox(false)}
           ></i>
         </div>
-        <div class="mt-4 h-3/4 overflow-y-auto" id="chat-box">
+        {errored() ? <div class="text-red-500">An error occured</div> : null}
+       <div class="mt-4 h-3/4 overflow-y-auto" id="chat-box">
           {messages().map((message) => (
             <Message {...message} />
           ))}
