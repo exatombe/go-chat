@@ -185,17 +185,23 @@ function App({ script }: { script: string }) {
   }, [channelId]);
   return (
     <div>
-      <div class="rounded-full shadow-md p-4 fixed bottom-4 right-4 cursor-pointer">
-        <i class="ri-chat-1-line bg-white text-2xl p-2" onClick={() => setChatBox(true)}></i>
+      <div class="rounded-full shadow-md p-4 fixed bottom-4 right-4 cursor-pointer" onclick={() => setChatBox(true)}>
+      <svg
+      class="w-8 h-8 text-black"
+      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3H14C18.4183 3 22 6.58172 22 11C22 15.4183 18.4183 19 14 19V22.5C9 20.5 2 17.5 2 11C2 6.58172 5.58172 3 10 3Z"></path></svg>
       </div>
-      <div class="fixed bottom-4 right-4 bg-white rounded-lg shadow-md p-4 duration-200 transform hover:rotate-0 hover:shadow-lg hover:scale-110
+      <div class="fixed bottom-4 right-4 bg-white rounded-lg shadow-md p-4
       h-3/4 w-96" style={{ display: chatBox() ? 'block' : 'none' }}>
         <div class="flex items-center justify-between">
           <h2 class="text-lg font-semibold">Chat</h2>
-          <i class="ri-close-line text-2xl cursor-pointer
+          <div class="text-2xl cursor-pointer
             hover:bg-gray-100 rounded-full p-2"
-            onClick={() => setChatBox(false)}
-          ></i>
+            onclick={() => setChatBox(false)}
+          >
+          <svg
+          class="w-8 h-8 text-black"
+          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z"></path></svg>
+          </div>
         </div>
         {errored() ? <div class="text-red-500">An error occured</div> : null}
        <div class="mt-4 h-3/4 overflow-y-auto" id="chat-box">
@@ -205,9 +211,10 @@ function App({ script }: { script: string }) {
         </div>
 
         <div class="mt-4">
-          <input type="text" placeholder="Type a message" class="w-full border-2 border-gray-200 p-2 rounded-lg" onInput={(e) => setMessage(e.currentTarget.value)} value={message()} />
-          <button class="bg-blue-500 text-white px-4 py-2 rounded-lg ml-2" onClick={send}>{username() == "" ? "Set Username" : "Send"}</button>
+          <input type="text" placeholder={username() ? "Send message" : "Set  Username"} class="w-full border-2 border-gray-200 p-2 rounded-lg" onInput={(e) => setMessage(e.currentTarget.value)} value={message()} />
         </div>
+        <br />
+        <br />
       </div>
     </div>
   );
