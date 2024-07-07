@@ -27,7 +27,7 @@ export default defineConfig({
         entryFileNames: "bundle.js",
       },
       input: {
-        main: 'src/index.jsx',
+        main: 'src/index.tsx',
       },
     },
     target: 'esnext',
