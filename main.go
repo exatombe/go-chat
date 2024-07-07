@@ -84,6 +84,7 @@ func (app *application) handleChannelGetMessages(w http.ResponseWriter, r *http.
 		limit = "100"
 	}
 
+	log.Printf("limit: %v, before: %v, after: %v", limit, before, after)
 	// we pass limit as an int
 	limitInt, err := strconv.Atoi(limit)
 	if err != nil {
@@ -98,7 +99,8 @@ func (app *application) handleChannelGetMessages(w http.ResponseWriter, r *http.
 		http.Error(w, "Error fetching messages", http.StatusInternalServerError)
 		return
 	}
-
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(messages)
 }
 
@@ -114,6 +116,7 @@ func (app *application) handleChannelWebhook(w http.ResponseWriter, r *http.Requ
 		http.Error(w, "Error fetching webhooks", http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	if len(webhooks) == 0 {
 		webhook, err := app.discord.WebhookCreate(channelID, "Webhook", "")
@@ -123,14 +126,14 @@ func (app *application) handleChannelWebhook(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
-		webhookUrl := "https://discord.com/api/webhooks/" + webhook.ID + "/" + webhook.Token
+		webhookUrl := "https://discord.com/api/webhooks/" + webhook.ID + "/" + webhook.Token + "?wait=true"
 
 		w.Write([]byte(webhookUrl))
 	}
 
 	for _, webhook := range webhooks {
 		if webhook.Type == discordgo.WebhookTypeIncoming {
-			webhookUrl := "https://discord.com/api/webhooks/" + webhook.ID + "/" + webhook.Token
+			webhookUrl := "https://discord.com/api/webhooks/" + webhook.ID + "/" + webhook.Token + "?wait=true"
 			w.Write([]byte(webhookUrl))
 			break
 		}
@@ -190,7 +193,6 @@ func (app *application) handleChannelMessages(w http.ResponseWriter, r *http.Req
 		base64Message := base64.StdEncoding.EncodeToString(message)
 		hub.Broadcast <- []byte(base64Message)
 	})
-
 	go hub.Run()
 	ws.ServeWs(hub, w, r)
 }
