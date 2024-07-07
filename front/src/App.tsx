@@ -191,7 +191,7 @@ function App({ script }: { script: string }) {
       xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M10 3H14C18.4183 3 22 6.58172 22 11C22 15.4183 18.4183 19 14 19V22.5C9 20.5 2 17.5 2 11C2 6.58172 5.58172 3 10 3Z"></path></svg>
       </div>
       <div class="fixed bottom-4 right-4 bg-white rounded-lg shadow-md p-4
-      h-3/4 w-96" style={{ display: chatBox() ? 'block' : 'none' }}>
+      h-auto w-96" style={{ display: chatBox() ? 'block' : 'none' }}>
         <div class="flex items-center justify-between">
           <h2 class="text-lg font-semibold">Chat</h2>
           <div class="text-2xl cursor-pointer
