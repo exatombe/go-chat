@@ -66,6 +66,7 @@ func (app *application) init() {
 	app.router.HandleFunc("/channels/{channelID}/webhook", app.handleChannelWebhook).Methods("POST")
 }
 
+// handleChannelGetMessages fetches messages from a channel in Discord
 func (app *application) handleChannelGetMessages(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	channelID := vars["channelID"]
@@ -101,6 +102,7 @@ func (app *application) handleChannelGetMessages(w http.ResponseWriter, r *http.
 	json.NewEncoder(w).Encode(messages)
 }
 
+// handleChannelWebhook creates a webhook for a channel in Discord
 func (app *application) handleChannelWebhook(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	channelID := vars["channelID"]
@@ -135,6 +137,10 @@ func (app *application) handleChannelWebhook(w http.ResponseWriter, r *http.Requ
 	}
 }
 
+// handleChannelMessages handles messages from a channel in Discord
+// It takes a http.ResponseWriter, a http.Request as arguments
+// It returns nothing
+// It creates a new hub and a new websocket connection to the hub
 func (app *application) handleChannelMessages(w http.ResponseWriter, r *http.Request) {
 	hub := ws.NewHub(app.discord)
 	vars := mux.Vars(r)

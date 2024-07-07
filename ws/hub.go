@@ -31,6 +31,9 @@ type Hub struct {
 	channelId string
 }
 
+// NewHub creates a new hub
+// It takes a discord session as argument
+// It returns a pointer to a Hub
 func NewHub(discord *discordgo.Session) *Hub {
 	return &Hub{
 		Broadcast:  make(chan []byte),
@@ -41,6 +44,7 @@ func NewHub(discord *discordgo.Session) *Hub {
 	}
 }
 
+// Run starts the hub
 func (h *Hub) Run() {
 	for {
 		select {
