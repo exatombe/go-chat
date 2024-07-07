@@ -38,8 +38,10 @@ func main() {
 }
 
 func (app *application) init() {
-	if err := godotenv.Load(); err != nil {
-		app.logger.Printf("Error loading .env file: %v", err)
+	if os.Getenv("DISCORD_BOT_TOKEN") == "" {
+		if err := godotenv.Load(); err != nil {
+			app.logger.Fatal("Error loading .env file: %v", err)
+		}
 	}
 
 	token := os.Getenv("DISCORD_BOT_TOKEN")
