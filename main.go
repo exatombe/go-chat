@@ -161,6 +161,36 @@ func (app *application) handleChannelMessages(w http.ResponseWriter, r *http.Req
 		hub.Broadcast <- []byte(base64Message)
 	})
 
+	app.discord.AddHandler(func(s *discordgo.Session, m *discordgo.MessageUpdate) {
+		if m.Author.ID == s.State.User.ID || m.ChannelID != channelID {
+			return
+		}
+
+		message, err := json.Marshal(m)
+		if err != nil {
+			app.logger.Printf("Error marshalling message: %v", err)
+			return
+		}
+		// we then encode in base64 the message
+		base64Message := base64.StdEncoding.EncodeToString(message)
+		hub.Broadcast <- []byte(base64Message)
+	})
+
+	app.discord.AddHandler(func(s *discordgo.Session, m *discordgo.MessageDelete) {
+		if m.ChannelID != channelID {
+			return
+		}
+
+		message, err := json.Marshal(m)
+		if err != nil {
+			app.logger.Printf("Error marshalling message: %v", err)
+			return
+		}
+		// we then encode in base64 the message
+		base64Message := base64.StdEncoding.EncodeToString(message)
+		hub.Broadcast <- []byte(base64Message)
+	})
+
 	go hub.Run()
 	ws.ServeWs(hub, w, r)
 }
