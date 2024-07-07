@@ -2,14 +2,16 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"time"
 
-	"go-chat.com/m/ws"
+	"github.com/exatombe/go-chat/ws"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gorilla/mux"
@@ -57,7 +59,80 @@ func (app *application) init() {
 
 	app.discord = discord
 	app.router = mux.NewRouter()
-	app.router.HandleFunc("/channels/{channelID}", app.handleChannelMessages).Methods("GET")
+	app.router.HandleFunc("/channels/{channelID}/gateway", app.handleChannelMessages).Methods("GET")
+
+	app.router.HandleFunc("/channels/{channelID}/messages", app.handleChannelGetMessages).Methods("GET")
+
+	app.router.HandleFunc("/channels/{channelID}/webhook", app.handleChannelWebhook).Methods("POST")
+}
+
+func (app *application) handleChannelGetMessages(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	channelID := vars["channelID"]
+	// get any queryStrings from the request
+	query := r.URL.Query()
+	// get the limit query string
+	limit := query.Get("limit")
+	// get the before query string
+	before := query.Get("before")
+	// get the after query string
+	after := query.Get("after")
+
+	// If those query strings are empty, we fetch the last 100 messages
+	if limit == "" {
+		limit = "100"
+	}
+
+	// we pass limit as an int
+	limitInt, err := strconv.Atoi(limit)
+	if err != nil {
+		app.logger.Printf("Error converting limit to int: %v", err)
+		http.Error(w, "Error converting limit to int", http.StatusInternalServerError)
+		return
+	}
+
+	messages, err := app.discord.ChannelMessages(channelID, limitInt, before, after, "")
+	if err != nil {
+		app.logger.Printf("Error fetching messages: %v", err)
+		http.Error(w, "Error fetching messages", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(messages)
+}
+
+func (app *application) handleChannelWebhook(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	channelID := vars["channelID"]
+
+	// this route intend to return a webhook URL for the channel
+	webhooks, err := app.discord.ChannelWebhooks(channelID)
+	if err != nil {
+		app.logger.Printf("Error fetching webhooks: %v", err)
+		http.Error(w, "Error fetching webhooks", http.StatusInternalServerError)
+		return
+	}
+
+	if len(webhooks) == 0 {
+		webhook, err := app.discord.WebhookCreate(channelID, "Webhook", "")
+		if err != nil {
+			app.logger.Printf("Error creating webhook: %v", err)
+			http.Error(w, "Error creating webhook", http.StatusInternalServerError)
+			return
+		}
+
+		webhookUrl := "https://discord.com/api/webhooks/" + webhook.ID + "/" + webhook.Token
+
+		w.Write([]byte(webhookUrl))
+	}
+
+	for _, webhook := range webhooks {
+		if webhook.Type == discordgo.WebhookTypeIncoming {
+			webhookUrl := "https://discord.com/api/webhooks/" + webhook.ID + "/" + webhook.Token
+			w.Write([]byte(webhookUrl))
+			break
+		}
+	}
 }
 
 func (app *application) handleChannelMessages(w http.ResponseWriter, r *http.Request) {
@@ -66,24 +141,21 @@ func (app *application) handleChannelMessages(w http.ResponseWriter, r *http.Req
 	channelID := vars["channelID"]
 
 	app.discord.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
-		if m.Author.ID == s.State.User.ID || m.Author.Bot || m.ChannelID != channelID {
+		if m.Author.ID == s.State.User.ID || m.ChannelID != channelID {
 			return
 		}
 
-		message, err := json.Marshal(map[string]interface{}{
-			"author":    m.Author.Username,
-			"content":   m.Content,
-			"channelID": m.ChannelID,
-		})
+		message, err := json.Marshal(m)
 		if err != nil {
 			app.logger.Printf("Error marshalling message: %v", err)
 			return
 		}
-
-		hub.Broadcast <- message
+		// we then encode in base64 the message
+		base64Message := base64.StdEncoding.EncodeToString(message)
+		hub.Broadcast <- []byte(base64Message)
 	})
 
-	go hub.Run(channelID)
+	go hub.Run()
 	ws.ServeWs(hub, w, r)
 }
 

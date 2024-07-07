@@ -1,9 +1,6 @@
 package ws
 
 import (
-	"encoding/json"
-	"log"
-
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -44,9 +41,7 @@ func NewHub(discord *discordgo.Session) *Hub {
 	}
 }
 
-func (h *Hub) Run(channelId string) {
-
-	h.channelId = channelId
+func (h *Hub) Run() {
 	for {
 		select {
 		case client := <-h.register:
@@ -60,47 +55,6 @@ func (h *Hub) Run(channelId string) {
 			for client := range h.clients {
 				select {
 				case client.send <- message:
-					msg := MessageWs{}
-					err := json.Unmarshal(message, &msg)
-					if err != nil {
-						log.Println("Error unmarshalling message:", err)
-						return
-					}
-
-					if msg.ChannelID != "" {
-						continue
-					}
-
-					log.Println("Message:", msg)
-
-					// Check if the channel already has a webhook
-					webhooks, err := h.discord.ChannelWebhooks(channelId)
-					if err != nil {
-						log.Println("Error getting webhooks:", err)
-						return
-					}
-
-					var webhook *discordgo.Webhook
-					if len(webhooks) == 0 {
-						// Create a new webhook to use
-						webhook, err = h.discord.WebhookCreate(channelId, "Transmuter", "")
-						if err != nil {
-							log.Println("Error creating webhook:", err)
-							return
-						}
-					} else {
-						webhook = webhooks[0]
-					}
-
-					// Execute the webhook
-					_, err = h.discord.WebhookExecute(webhook.ID, webhook.Token, false, &discordgo.WebhookParams{
-						Content:  msg.Content,
-						Username: msg.Author,
-					})
-					if err != nil {
-						log.Println("Error executing webhook:", err)
-					}
-
 				default:
 					close(client.send)
 					delete(h.clients, client)

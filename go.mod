@@ -1,4 +1,4 @@
-module go-chat.com/m
+module github.com/exatombe/go-chat
 
 go 1.21.4
 
