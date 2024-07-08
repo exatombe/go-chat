@@ -37,22 +37,12 @@ function ContentWithEmoji({ content, mentioned }: { content: string, mentioned: 
   if (emoji) {
     const parts = content.split(emojiRegex);
     return (
-      <div class="flex items-center">
+      <div class="gochat-flex gochat-items-center">
         {parts.map((part, index) => (
           <>
             {part}
             {emoji[index] ? (
-              <ImageRoot>
-                <Image
-                  src={`https://cdn.discordapp.com/emojis/${emoji[index].split(":")[2].slice(0, -1)}.${emoji[index].split(":")[0] === "<a" ? "gif" : "png"
-                    }`}
-                  class="w-6 h-6"
-                  alt="emoji"
-                />
-                <ImageFallback>
-                  <span>Emoji</span>
-                </ImageFallback>
-              </ImageRoot>
+              <img src={`https://cdn.discordapp.com/emojis/${emoji[index].split(":")[2].slice(0, -1)}.png`} alt="emoji" width={24} height={24} class="gochat-mx-1" />
             ) : null}
           </>
         ))}
@@ -71,7 +61,7 @@ function ContentWithEmoji({ content, mentioned }: { content: string, mentioned: 
           <>
             {part}
             {mentions[index] ? (
-              <span class="bg-blue-100 text-blue-500 p-1 rounded-lg">
+              <span class="gochat-bg-blue-100 gochat-text-blue-500 gochat-p-1 gochat-rounded-lg">
                 @{mentioned.find((mention) => mentions[index].includes(mention.id))?.username || "Unknown User"}
               </span>
             ) : null}
@@ -95,50 +85,56 @@ function Message(props: DiscordMessage) {
   }
 
   return (
-    <div class="flex items-center bg-gray-100 shadow-md" style={{ margin: "5px" }}>
-      <ImageRoot>
-        <Image src={avatarUrl} class="w-10 h-10" alt="avatar" />
-        <ImageFallback>
-          <span>{props.author.username}</span>
-        </ImageFallback>
-      </ImageRoot>
-      <div style={{ "margin-left": "10px" }}>
-        <h3 class="font-semibold">{props.author.username}</h3>
+    <div class="gochat-flex gochat-items-center gochat-bg-gray-100 gochat-shadow-md gochat-space-x-2 gochat-p-2">
+      <img src={avatarUrl} alt="avatar" class="gochat-w-10 gochat-h-10 gochat-rounded-full" />
+      <div class="gochat-flex gochat-flex-col gochat-space-y-2 gochat-p-2 gochat-w-full" style={{
+        "margin-left": "10px",
+      }}>
+        <h3 class="gochat-font-semibold">{props.author.username}</h3>
+        {props.pinned ? <div class="gochat-bg-yellow-200 gochat-p-1 gochat-rounded-lg">Pinned Message</div> : null}
         {props.content ? <ContentWithEmoji content={fixEncoding(props.content)} mentioned={props.mentions} /> : null}
-        {props.attachments.length > 0 ? (<Carousel class="w-full max-w-xs">
+        {props.attachments.length > 0 ? (<Carousel class="gochat-w-full gochat-max-w-xs">
           <CarouselContent>
             <Index each={props.attachments}>
               {(attachment, index) => {
-                  if (attachment().content_type.startsWith("image")) {
-                    return (
-                      <CarouselItem data-index={index}>
-                        <img src={attachment().url} class="aspect-auto" alt={attachment().filename} />
-                      </CarouselItem>
-                    )
-                  }
-
-                  if (attachment().content_type.startsWith("video")) {
-                    return (
-                      <CarouselItem data-index={index}>
-                        <video controls class="aspect-auto">
-                          <source src={attachment().url} type={attachment().content_type} />
-                        </video>
-                      </CarouselItem>
-                    )
-                  }
-
+                if (attachment().content_type.startsWith("image")) {
                   return (
                     <CarouselItem data-index={index}>
-                      <div class="bg-gray-200 p-2 rounded-lg flex items-center space-x-2" style={{ "max-width": "100px" }}>
-                      <svg xmlns="http://www.w3.org/2000/svg"
-                      width={24}
-                      height={24}
-                      viewBox="0 0 24 24" fill="currentColor"><path d="M3 8L9.00319 2H19.9978C20.5513 2 21 2.45531 21 2.9918V21.0082C21 21.556 20.5551 22 20.0066 22H3.9934C3.44476 22 3 21.5501 3 20.9932V8ZM10 3.5L4.5 9H10V3.5Z"></path></svg>
-
-                        <a href={attachment().url} target="_blank" rel="noreferrer">{attachment().filename}</a>
-                      </div>
+                      <Dialog>
+                        <DialogTrigger as={(props) => <img src={attachment().url} class="gochat-rounded-lg gochat-object-cover gochat-aspect-[16/9]" alt={attachment().filename} height={300} width={200} {...props} />} />
+                        <DialogContent>
+                          <DialogTitle>{attachment().filename}</DialogTitle>
+                          <DialogDescription>
+                          <img src={attachment().url} class="gochat-rounded-lg gochat-object-cover gochat-aspect-auto" alt={attachment().filename} style={{ "max-width": "80%" }} />
+                        </DialogDescription>
+                        </DialogContent>
+                      </Dialog>
                     </CarouselItem>
                   )
+                }
+
+                if (attachment().content_type.startsWith("video")) {
+                  return (
+                    <CarouselItem data-index={index}>
+                      <video controls class="aspect-auto">
+                        <source src={attachment().url} type={attachment().content_type} />
+                      </video>
+                    </CarouselItem>
+                  )
+                }
+
+                return (
+                  <CarouselItem data-index={index}>
+                    <div class="gochat-bg-gray-200 gochat-p-2 gochat-rounded-lg gochat-flex gochat-items-center gochat-space-x-2" style={{ "max-width": "100px" }}>
+                      <svg xmlns="http://www.w3.org/2000/svg"
+                        width={24}
+                        height={24}
+                        viewBox="0 0 24 24" fill="currentColor"><path d="M3 8L9.00319 2H19.9978C20.5513 2 21 2.45531 21 2.9918V21.0082C21 21.556 20.5551 22 20.0066 22H3.9934C3.44476 22 3 21.5501 3 20.9932V8ZM10 3.5L4.5 9H10V3.5Z"></path></svg>
+
+                      <a href={attachment().url} target="_blank" rel="noreferrer">{attachment().filename}</a>
+                    </div>
+                  </CarouselItem>
+                )
               }}
             </Index>
           </CarouselContent>
@@ -185,7 +181,7 @@ function App({ script }: { script: string }) {
       scrollToBottom();
       return;
     }
-    if(message() !== ""){
+    if (message() !== "") {
       sendMessage(webhook(), message(), username());
     }
     setMessage("");
@@ -203,7 +199,7 @@ function App({ script }: { script: string }) {
     const ws = websocket(channelId);
     ws.onmessage = (event) => {
       try {
-       const data = processMessage(event.data) as DiscordMessage;
+        const data = processMessage(event.data) as DiscordMessage;
         console.log(data);
         // We need to update the message if the id is already in the list
         const list = messages();
@@ -223,15 +219,21 @@ function App({ script }: { script: string }) {
     };
   }, [channelId]);
   return (
-    <Dialog preventScroll={true} modal={false}>
+    <Dialog preventScroll={true} modal={true}>
       <DialogTrigger onClick={scrollToBottom}
         as={(props: DialogTriggerProps) => (
-          <div class="rounded-full shadow-md p-4 fixed right-4 cursor-pointer h-2" {...props} style={{
-            bottom: "0px",
-            margin: "5px",
+          <div {...props} style={{
+            bottom: "50px",
+            background: "white",
+            position: "fixed",
+            right: "10px",
+            padding: "5px",
+            "border-radius": "50%",
+            border: "1px solid black",
           }}>
             <svg
               width={48}
+              color="black"
               height={48}
               xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
               <path d="M10 3H14C18.4183 3 22 6.58172 22 11C22 15.4183 18.4183 19 14 19V22.5C9 20.5 2 17.5 2 11C2 6.58172 5.58172 3 10 3Z">
@@ -240,21 +242,21 @@ function App({ script }: { script: string }) {
           </div>
         )}>
       </DialogTrigger>
-      <DialogContent style={{ background: "white", "max-width": "800px" }}>
-        <DialogHeader class="flex items-center justify-between">
-          <DialogTitle class="text-lg font-semibold">Chat</DialogTitle>
+      <DialogContent>
+        <DialogHeader class="gochat-flex gochat-items-center gochat-justify-between">
+          <DialogTitle class="gochat-text-lg gochat-font-semibold">Chat</DialogTitle>
         </DialogHeader>
-        <DialogDescription class="text-sm">
-          {errored() ? <div class="text-red-500">An error occured</div> : null}
-          {username() !== "" ? <div id="chat-box" style={{ height: "400px", overflow: "auto" }}>
+        <DialogDescription class="gochat-text-sm gochat-container gochat-mx-auto gochat-p-4 gochat-max-w-lg">
+          {errored() ? <div class="gochat-text-red-500">An error occured</div> : null}
+          {username() !== "" ? <div id="chat-box" style={{ "max-height": "800px", overflow: "auto" }}>
             <Index each={messages()}>
               {(message) => (
                 <Message {...message()} data-index={message().id} />
               )}
             </Index>
           </div> : null}
-          <div class="mt-4">
-            <TextFieldRoot class="flex items-center space-x-2">
+          <div class="gochat-mt-4">
+            <TextFieldRoot class="gochat-flex gochat-items-center gochat-space-x-2">
               <TextField type="text" placeholder={username() ? "Send message" : "Set  Username"} onInput={(e) => setMessage(e.currentTarget.value)} value={message()} /> <Button onClick={send}>Send</Button>
             </TextFieldRoot>
           </div>

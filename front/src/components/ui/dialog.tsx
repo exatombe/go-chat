@@ -36,7 +36,7 @@ export const DialogContent = <T extends ValidComponent = "div">(
 			/>
 			<DialogPrimitive.Content
 				class={cn(
-					"gochat-fixed gochat-left-[50%] gochat-top-[50%] gochat-z-50 gochat-grid gochat-w-full gochat-max-w-lg gochat-translate-x-[-50%] gochat-translate-y-[-50%] gochat-gap-4 gochat-border gochat-bg-background gochat-p-6 gochat-shadow-lg data-[closed]:gochat-duration-200 data-[expanded]:gochat-duration-200 data-[expanded]:gochat-animate-in data-[closed]:gochat-animate-out data-[closed]:gochat-fade-out-0 data-[expanded]:gochat-fade-in-0 data-[closed]:gochat-zoom-out-95 data-[expanded]:gochat-zoom-in-95 data-[closed]:gochat-slide-out-to-left-1/2 data-[closed]:gochat-slide-out-to-top-[48%] data-[expanded]:gochat-slide-in-from-left-1/2 data-[expanded]:gochat-slide-in-from-top-[48%] sm:gochat-rounded-lg md:gochat-w-full",
+					"gochat-fixed gochat-left-[50%] gochat-top-[50%] gochat-z-50 gochat-grid gochat-w-full gochat-max-w-lg gochat-translate-x-[-50%] gochat-translate-y-[-50%] gochat-gap-4 gochat-border gochat-bg-white gochat-p-6 gochat-shadow-lg data-[closed]:gochat-duration-200 data-[expanded]:gochat-duration-200 data-[expanded]:gochat-animate-in data-[closed]:gochat-animate-out data-[closed]:gochat-fade-out-0 data-[expanded]:gochat-fade-in-0 data-[closed]:gochat-zoom-out-95 data-[expanded]:gochat-zoom-in-95 data-[closed]:gochat-slide-out-to-left-1/2 data-[closed]:gochat-slide-out-to-top-[48%] data-[expanded]:gochat-slide-in-from-left-1/2 data-[expanded]:gochat-slide-in-from-top-[48%] sm:gochat-rounded-lg  md:gochat-w-full",
 					local.class,
 				)}
 				{...rest}
