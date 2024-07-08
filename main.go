@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/exatombe/go-chat/gpt"
@@ -81,6 +82,20 @@ func (app *application) listenBotMessage(s *discordgo.Session, m *discordgo.Mess
 			if mention.ID == s.State.User.ID {
 				app.logger.Printf("Starting Completion")
 				gpt := gpt.NewGPT()
+				// we will replace every mention of the bot by the corresponding user name
+				for _, user := range m.Mentions {
+					m.Content = strings.ReplaceAll(m.Content, "<@"+user.ID+">", user.Username)
+				}
+
+				// we will do the same for the roles
+				for _, role := range m.MentionRoles {
+					m.Content = strings.ReplaceAll(m.Content, "<@&"+role+">", role)
+				}
+
+				// and for the channels
+				for _, channel := range m.MentionChannels {
+					m.Content = strings.ReplaceAll(m.Content, "<#"+channel.ID+">", channel.Name)
+				}
 
 				// we need to retrieve if their are any images in the message
 				imagesUrls := []string{}

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 )
@@ -99,6 +100,7 @@ func (g *GPT) CreateCompletion(prompt string, imagesUrls []string) (string, erro
 	if err != nil {
 		return "", err
 	}
+	log.Println(string(body))
 	var response Response
 	err = json.Unmarshal(body, &response)
 	if err != nil {
