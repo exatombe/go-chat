@@ -36,46 +36,38 @@ func (g *GPT) CreateCompletion(prompt string, imagesUrls []string) (string, erro
 		} `json:"choices"`
 	}
 
-	type Content struct {
-		Type     string `json:"type"`
-		Text     string `json:"text"`
-		ImageUrl struct {
-			Url string `json:"url"`
-		} `json:"image_url"`
-	}
-
-	type Message struct {
-		Role    string    `json:"role"`
-		Content []Content `json:"content"`
-	}
-
-	MessageContent := []Content{
+	MessageContent := []map[string]interface{}{
 		{
-			Type: "text",
-			Text: prompt,
+			"type": "text",
+			"text": prompt,
 		},
 	}
 
 	if len(imagesUrls) != 0 {
 		for _, imageUrl := range imagesUrls {
-			MessageContent = append(MessageContent, Content{
-				Type: "image",
-				ImageUrl: struct {
-					Url string `json:"url"`
-				}{Url: imageUrl},
+			MessageContent = append(MessageContent, map[string]interface{}{
+				"type": "image_url",
+				"image_url": map[string]string{
+					"url": imageUrl,
+				},
 			})
 		}
 	}
 
 	jsonRequest, err := json.Marshal(map[string]interface{}{
 		"model": "gpt-4o",
-		"messages": []Message{
+		"messages": []map[string]interface{}{
 			{
-				Role:    "user",
-				Content: MessageContent,
+				"role":    "system",
+				"content": "You are a helpful assistant.",
+			},
+			{
+				"role":    "user",
+				"content": MessageContent,
 			},
 		},
 	})
+
 	if err != nil {
 		return "", err
 	}
