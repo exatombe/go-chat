@@ -19,8 +19,14 @@
     "vite-plugin-solid": "^2.8.2"
   },
   "dependencies": {
+    "@kobalte/core": "^0.13.3",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "embla-carousel-solid": "^8.1.6",
     "remixicon": "^4.3.0",
     "solid-js": "^1.8.11",
+    "tailwind-merge": "^2.4.0",
+    "tailwindcss-animate": "^1.0.7",
     "vite-plugin-css-injected-by-js": "^3.5.1"
   }
 }

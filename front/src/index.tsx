@@ -5,7 +5,8 @@ import { render } from 'solid-js/web';
 import './index.css';
 import App from './App';
 
-const scriptUrl =import.meta.url.includes("v=") ? "http://localhost:3000/bundle.js?channel_id=1258912186244268104" : import.meta.url;
+const scriptUrl =import.meta.url.includes("t=") ? "http://localhost:3000/bundle.js?channel_id=1258912186244268104" : import.meta.url;
+console.log(scriptUrl)
 const root = document.querySelector("body");
 
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
