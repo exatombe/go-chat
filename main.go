@@ -26,10 +26,8 @@ type application struct {
 }
 
 func main() {
-	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
-
 	app := &application{
-		logger: logger,
+		logger: log.New(os.Stdout, "", log.Ldate|log.Ltime),
 	}
 
 	app.init()
@@ -148,11 +146,22 @@ func (app *application) handleChannelWebhook(w http.ResponseWriter, r *http.Requ
 // It returns nothing
 // It creates a new hub and a new websocket connection to the hub
 func (app *application) handleChannelMessages(w http.ResponseWriter, r *http.Request) {
+	if app.discord == nil {
+		app.logger.Println("Discord session is not initialized")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
 	hub := ws.NewHub(app.discord)
 	vars := mux.Vars(r)
 	channelID := vars["channelID"]
 
 	app.discord.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+		if m == nil || m.Author == nil || s.State == nil || s.State.User == nil {
+			app.logger.Println("Received a MessageCreate event with nil Author or State User")
+			return
+		}
+
 		if m.Author.ID == s.State.User.ID || m.ChannelID != channelID {
 			return
 		}
@@ -168,6 +177,11 @@ func (app *application) handleChannelMessages(w http.ResponseWriter, r *http.Req
 	})
 
 	app.discord.AddHandler(func(s *discordgo.Session, m *discordgo.MessageUpdate) {
+		if m == nil || m.Author == nil || s.State == nil || s.State.User == nil {
+			app.logger.Println("Received a MessageUpdate event with nil Author or State User")
+			return
+		}
+
 		if m.Author.ID == s.State.User.ID || m.ChannelID != channelID {
 			return
 		}
@@ -177,13 +191,19 @@ func (app *application) handleChannelMessages(w http.ResponseWriter, r *http.Req
 			app.logger.Printf("Error marshalling message: %v", err)
 			return
 		}
+
 		// we then encode in base64 the message
 		base64Message := base64.StdEncoding.EncodeToString(message)
 		hub.Broadcast <- []byte(base64Message)
 	})
 
 	app.discord.AddHandler(func(s *discordgo.Session, m *discordgo.MessageDelete) {
-		if m.ChannelID != channelID {
+		if s.State == nil || s.State.User == nil {
+			app.logger.Println("Received a MessageDelete event with nil State User")
+			return
+		}
+
+		if m == nil || m.ChannelID != channelID {
 			return
 		}
 
