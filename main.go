@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/exatombe/go-chat/gpt"
 	"github.com/exatombe/go-chat/ws"
 
 	"github.com/bwmarrin/discordgo"
@@ -65,6 +66,51 @@ func (app *application) init() {
 	app.router.HandleFunc("/channels/{channelID}/messages", app.handleChannelGetMessages).Methods("GET")
 
 	app.router.HandleFunc("/channels/{channelID}/webhook", app.handleChannelWebhook).Methods("POST")
+
+	app.discord.AddHandler(app.listenBotMessage)
+}
+
+func (app *application) listenBotMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if m.Author.ID == s.State.User.ID {
+		return
+	}
+
+	// Check if the message contain a mention of the bot itself
+	if m.Mentions != nil {
+		for _, mention := range m.Mentions {
+			if mention.ID == s.State.User.ID {
+				gpt := gpt.NewGPT()
+
+				// we need to retrieve if their are any images in the message
+				imagesUrls := []string{}
+				for _, attachment := range m.Attachments {
+					if attachment.ContentType == "image/png" || attachment.ContentType == "image/jpeg" {
+						imagesUrls = append(imagesUrls, attachment.URL)
+					}
+				}
+				completion, err := gpt.CreateCompletion(m.Content, imagesUrls)
+				if err != nil {
+					app.logger.Printf("Error creating completion: %v", err)
+					return
+				}
+				// we need to manage the response size of the completion
+				if len(completion) > 2000 {
+					// we split the completion in multiple messages of 2000 characters
+					for i := 0; i < len(completion); i += 2000 {
+						end := i + 2000
+						if end > len(completion) {
+							end = len(completion)
+						}
+						s.ChannelMessageSend(m.ChannelID, completion[i:end])
+					}
+				} else {
+					s.ChannelMessageSend(m.ChannelID, completion)
+				}
+				break
+			}
+		}
+	}
+
 }
 
 // handleChannelGetMessages fetches messages from a channel in Discord
