@@ -136,7 +136,7 @@ export const Carousel = (props: ComponentProps<"div"> & CarouselProps) => {
 		<CarouselContext.Provider value={value}>
 			<div
 				onKeyDown={handleKeyDown}
-				class={cn("relative", local.class)}
+				class={cn("gochat-relative", local.class)}
 				role="region"
 				aria-roledescription="carousel"
 				{...rest}
@@ -152,11 +152,11 @@ export const CarouselContent = (props: ComponentProps<"div">) => {
 	const { carouselRef, orientation } = useCarousel();
 
 	return (
-		<div ref={carouselRef} class="overflow-hidden">
+		<div ref={carouselRef} class="gochat-overflow-hidden">
 			<div
 				class={cn(
-					"flex",
-					orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col",
+					"gochat-flex",
+					orientation === "horizontal" ? "gochat--ml-4" : "gochat--mt-4 gochat-flex-col",
 					local.class,
 				)}
 				{...rest}
@@ -174,8 +174,8 @@ export const CarouselItem = (props: ComponentProps<"div">) => {
 			role="group"
 			aria-roledescription="slide"
 			class={cn(
-				"min-w-0 shrink-0 grow-0 basis-full",
-				orientation === "horizontal" ? "pl-4" : "pt-4",
+				"gochat-min-w-0 gochat-shrink-0 gochat-grow-0 gochat-basis-full",
+				orientation === "horizontal" ? "gochat-pl-4" : "gochat-pt-4",
 				local.class,
 			)}
 			{...rest}
@@ -198,10 +198,10 @@ export const CarouselPrevious = (
 			variant={local.variant}
 			size={local.size}
 			class={cn(
-				"absolute  h-8 w-8 touch-manipulation rounded-full",
+				"gochat-absolute gochat- gochat-h-8 gochat-w-8 gochat-touch-manipulation gochat-rounded-full",
 				orientation === "horizontal"
-					? "-left-12 top-1/2 -translate-y-1/2"
-					: "-top-12 left-1/2 -translate-x-1/2 rotate-90",
+					? "gochat--left-12 gochat-top-1/2 gochat--translate-y-1/2"
+					: "gochat--top-12 gochat-left-1/2 gochat--translate-x-1/2 gochat-rotate-90",
 				local.class,
 			)}
 			disabled={!canScrollPrev()}
@@ -211,7 +211,7 @@ export const CarouselPrevious = (
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 24 24"
-				class="size-4"
+				class="gochat-size-4"
 			>
 				<path
 					fill="none"
@@ -242,10 +242,10 @@ export const CarouselNext = (
 			variant={local.variant}
 			size={local.size}
 			class={cn(
-				"absolute h-8 w-8 touch-manipulation rounded-full",
+				"gochat-absolute gochat-h-8 gochat-w-8 gochat-touch-manipulation gochat-rounded-full",
 				orientation === "horizontal"
-					? "-right-12 top-1/2 -translate-y-1/2"
-					: "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
+					? "gochat--right-12 gochat-top-1/2 gochat--translate-y-1/2"
+					: "gochat--bottom-12 gochat-left-1/2 gochat--translate-x-1/2 gochat-rotate-90",
 				local.class,
 			)}
 			disabled={!canScrollNext()}
@@ -255,7 +255,7 @@ export const CarouselNext = (
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 24 24"
-				class="size-4"
+				class="gochat-size-4"
 			>
 				<path
 					fill="none"

@@ -1,4 +1,4 @@
-import { cn } from "../../utils/cn"
+import { cn } from "../../utils/cn";
 import type {
 	DialogContentProps,
 	DialogDescriptionProps,
@@ -30,23 +30,23 @@ export const DialogContent = <T extends ValidComponent = "div">(
 		<DialogPrimitive.Portal>
 			<DialogPrimitive.Overlay
 				class={cn(
-					"fixed inset-0 z-50 bg-background/80 data-[expanded]:animate-in data-[closed]:animate-out data-[closed]:fade-out-0 data-[expanded]:fade-in-0",
+					"gochat-fixed gochat-inset-0 gochat-z-50 gochat-bg-background/80 data-[expanded]:gochat-animate-in data-[closed]:gochat-animate-out data-[closed]:gochat-fade-out-0 data-[expanded]:gochat-fade-in-0",
 				)}
 				{...rest}
 			/>
 			<DialogPrimitive.Content
 				class={cn(
-					"fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg data-[closed]:duration-200 data-[expanded]:duration-200 data-[expanded]:animate-in data-[closed]:animate-out data-[closed]:fade-out-0 data-[expanded]:fade-in-0 data-[closed]:zoom-out-95 data-[expanded]:zoom-in-95 data-[closed]:slide-out-to-left-1/2 data-[closed]:slide-out-to-top-[48%] data-[expanded]:slide-in-from-left-1/2 data-[expanded]:slide-in-from-top-[48%] sm:rounded-lg md:w-full",
+					"gochat-fixed gochat-left-[50%] gochat-top-[50%] gochat-z-50 gochat-grid gochat-w-full gochat-max-w-lg gochat-translate-x-[-50%] gochat-translate-y-[-50%] gochat-gap-4 gochat-border gochat-bg-background gochat-p-6 gochat-shadow-lg data-[closed]:gochat-duration-200 data-[expanded]:gochat-duration-200 data-[expanded]:gochat-animate-in data-[closed]:gochat-animate-out data-[closed]:gochat-fade-out-0 data-[expanded]:gochat-fade-in-0 data-[closed]:gochat-zoom-out-95 data-[expanded]:gochat-zoom-in-95 data-[closed]:gochat-slide-out-to-left-1/2 data-[closed]:gochat-slide-out-to-top-[48%] data-[expanded]:gochat-slide-in-from-left-1/2 data-[expanded]:gochat-slide-in-from-top-[48%] sm:gochat-rounded-lg md:gochat-w-full",
 					local.class,
 				)}
 				{...rest}
 			>
 				{local.children}
-				<DialogPrimitive.CloseButton class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-[opacity,box-shadow] hover:opacity-100 focus:outline-none focus:ring-[1.5px] focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+				<DialogPrimitive.CloseButton class="gochat-absolute gochat-right-4 gochat-top-4 gochat-rounded-sm gochat-opacity-70 gochat-ring-offset-background gochat-transition-[opacity,box-shadow] hover:gochat-opacity-100 focus:gochat-outline-none focus:gochat-ring-[1.5px] focus:gochat-ring-ring focus:gochat-ring-offset-2 disabled:gochat-pointer-events-none">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 24 24"
-						class="h-4 w-4"
+						class="gochat-h-4 gochat-w-4"
 					>
 						<path
 							fill="none"
@@ -75,7 +75,7 @@ export const DialogTitle = <T extends ValidComponent = "h2">(
 
 	return (
 		<DialogPrimitive.Title
-			class={cn("text-lg font-semibold text-foreground", local.class)}
+			class={cn("gochat-text-lg gochat-font-semibold gochat-text-foreground", local.class)}
 			{...rest}
 		/>
 	);
@@ -93,7 +93,7 @@ export const DialogDescription = <T extends ValidComponent = "p">(
 
 	return (
 		<DialogPrimitive.Description
-			class={cn("text-sm text-muted-foreground", local.class)}
+			class={cn("gochat-text-sm gochat-text-muted-foreground", local.class)}
 			{...rest}
 		/>
 	);
@@ -105,7 +105,7 @@ export const DialogHeader = (props: ComponentProps<"div">) => {
 	return (
 		<div
 			class={cn(
-				"flex flex-col space-y-2 text-center sm:text-left",
+				"gochat-flex gochat-flex-col gochat-space-y-2 gochat-text-center sm:gochat-text-left",
 				local.class,
 			)}
 			{...rest}
@@ -119,7 +119,7 @@ export const DialogFooter = (props: ComponentProps<"div">) => {
 	return (
 		<div
 			class={cn(
-				"flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+				"gochat-flex gochat-flex-col-reverse sm:gochat-flex-row sm:gochat-justify-end sm:gochat-space-x-2",
 				local.class,
 			)}
 			{...rest}

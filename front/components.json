@@ -7,7 +7,7 @@
       "variable": true
     },
     "color": "slate",
-    "prefix": ""
+    "prefix": "gochat-"
   },
   "alias": {
     "component": "src/components",

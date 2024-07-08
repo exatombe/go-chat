@@ -8,26 +8,26 @@ import type { ValidComponent } from "solid-js";
 import { splitProps } from "solid-js";
 
 export const buttonVariants = cva(
-	"inline-flex items-center justify-center rounded-md text-sm font-medium transition-[color,background-color,box-shadow] focus-visible:outline-none focus-visible:ring-[1.5px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+	"gochat-inline-flex gochat-items-center gochat-justify-center gochat-rounded-md gochat-text-sm gochat-font-medium gochat-transition-[color,background-color,box-shadow] focus-visible:gochat-outline-none focus-visible:gochat-ring-[1.5px] focus-visible:gochat-ring-ring disabled:gochat-pointer-events-none disabled:gochat-opacity-50",
 	{
 		variants: {
 			variant: {
 				default:
-					"bg-primary text-primary-foreground shadow hover:bg-primary/90",
+					"gochat-bg-primary gochat-text-primary-foreground gochat-shadow hover:gochat-bg-primary/90",
 				destructive:
-					"bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+					"gochat-bg-destructive gochat-text-destructive-foreground gochat-shadow-sm hover:gochat-bg-destructive/90",
 				outline:
-					"border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+					"gochat-border gochat-border-input gochat-bg-background gochat-shadow-sm hover:gochat-bg-accent hover:gochat-text-accent-foreground",
 				secondary:
-					"bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-				ghost: "hover:bg-accent hover:text-accent-foreground",
-				link: "text-primary underline-offset-4 hover:underline",
+					"gochat-bg-secondary gochat-text-secondary-foreground gochat-shadow-sm hover:gochat-bg-secondary/80",
+				ghost: "hover:gochat-bg-accent hover:gochat-text-accent-foreground",
+				link: "gochat-text-primary gochat-underline-offset-4 hover:gochat-underline",
 			},
 			size: {
-				default: "h-9 px-4 py-2",
-				sm: "h-8 rounded-md px-3 text-xs",
-				lg: "h-10 rounded-md px-8",
-				icon: "h-9 w-9",
+				default: "gochat-h-9 gochat-px-4 gochat-py-2",
+				sm: "gochat-h-8 gochat-rounded-md gochat-px-3 gochat-text-xs",
+				lg: "gochat-h-10 gochat-rounded-md gochat-px-8",
+				icon: "gochat-h-9 gochat-w-9",
 			},
 		},
 		defaultVariants: {

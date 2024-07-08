@@ -22,21 +22,21 @@ export const TextFieldRoot = <T extends ValidComponent = "div">(
 ) => {
 	const [local, rest] = splitProps(props as textFieldProps, ["class"]);
 
-	return <TextFieldPrimitive class={cn("space-y-1", local.class)} {...rest} />;
+	return <TextFieldPrimitive class={cn("gochat-space-y-1", local.class)} {...rest} />;
 };
 
 export const textfieldLabel = cva(
-	"text-sm data-[disabled]:cursor-not-allowed data-[disabled]:opacity-70 font-medium",
+	"gochat-text-sm data-[disabled]:gochat-cursor-not-allowed data-[disabled]:gochat-opacity-70 gochat-font-medium",
 	{
 		variants: {
 			label: {
-				true: "data-[invalid]:text-destructive",
+				true: "data-[invalid]:gochat-text-destructive",
 			},
 			error: {
-				true: "text-destructive text-xs",
+				true: "gochat-text-destructive gochat-text-xs",
 			},
 			description: {
-				true: "font-normal text-muted-foreground",
+				true: "gochat-font-normal gochat-text-muted-foreground",
 			},
 		},
 		defaultVariants: {
@@ -120,7 +120,7 @@ export const TextField = <T extends ValidComponent = "input">(
 	return (
 		<TextFieldPrimitive.Input
 			class={cn(
-				"flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-shadow file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[1.5px] focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+				"gochat-flex gochat-h-9 gochat-w-full gochat-rounded-md gochat-border gochat-border-input gochat-bg-transparent gochat-px-3 gochat-py-1 gochat-text-sm gochat-shadow-sm gochat-transition-shadow file:gochat-border-0 file:gochat-bg-transparent file:gochat-text-sm file:gochat-font-medium placeholder:gochat-text-muted-foreground focus-visible:gochat-outline-none focus-visible:gochat-ring-[1.5px] focus-visible:gochat-ring-ring disabled:gochat-cursor-not-allowed disabled:gochat-opacity-50",
 				local.class,
 			)}
 			{...rest}

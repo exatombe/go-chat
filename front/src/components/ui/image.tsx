@@ -21,7 +21,7 @@ export const ImageRoot = <T extends ValidComponent = "span">(
 	return (
 		<ImagePrimitive
 			class={cn(
-				"relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
+				"gochat-relative gochat-flex gochat-h-10 gochat-w-10 gochat-shrink-0 gochat-overflow-hidden gochat-rounded-full",
 				local.class,
 			)}
 			{...rest}
@@ -40,7 +40,7 @@ export const Image = <T extends ValidComponent = "img">(
 
 	return (
 		<ImagePrimitive.Img
-			class={cn("aspect-square h-full w-full", local.class)}
+			class={cn("gochat-aspect-square gochat-h-full gochat-w-full", local.class)}
 			{...rest}
 		/>
 	);
@@ -59,7 +59,7 @@ export const ImageFallback = <T extends ValidComponent = "span">(
 	return (
 		<ImagePrimitive.Fallback
 			class={cn(
-				"flex h-full w-full items-center justify-center rounded-full bg-muted",
+				"gochat-flex gochat-h-full gochat-w-full gochat-items-center gochat-justify-center gochat-rounded-full gochat-bg-muted",
 				local.class,
 			)}
 			{...rest}
