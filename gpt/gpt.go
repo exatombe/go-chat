@@ -55,13 +55,15 @@ func (g *GPT) CreateCompletion(prompt string, imagesUrls []string) (string, erro
 		},
 	}
 
-	for _, imageUrl := range imagesUrls {
-		MessageContent = append(MessageContent, Content{
-			Type: "image",
-			ImageUrl: struct {
-				Url string `json:"url"`
-			}{Url: imageUrl},
-		})
+	if len(imagesUrls) != 0 {
+		for _, imageUrl := range imagesUrls {
+			MessageContent = append(MessageContent, Content{
+				Type: "image",
+				ImageUrl: struct {
+					Url string `json:"url"`
+				}{Url: imageUrl},
+			})
+		}
 	}
 
 	jsonRequest, err := json.Marshal(map[string]interface{}{
@@ -97,12 +99,13 @@ func (g *GPT) CreateCompletion(prompt string, imagesUrls []string) (string, erro
 	if err != nil {
 		return "", err
 	}
-
 	var response Response
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		return "", err
 	}
-
+	if len(response.Choices) == 0 {
+		return "", fmt.Errorf("no response from GPT")
+	}
 	return response.Choices[0].Message.Content, nil
 }

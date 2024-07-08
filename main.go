@@ -79,15 +79,19 @@ func (app *application) listenBotMessage(s *discordgo.Session, m *discordgo.Mess
 	if m.Mentions != nil {
 		for _, mention := range m.Mentions {
 			if mention.ID == s.State.User.ID {
+				app.logger.Printf("Starting Completion")
 				gpt := gpt.NewGPT()
 
 				// we need to retrieve if their are any images in the message
 				imagesUrls := []string{}
-				for _, attachment := range m.Attachments {
-					if attachment.ContentType == "image/png" || attachment.ContentType == "image/jpeg" {
-						imagesUrls = append(imagesUrls, attachment.URL)
+				if len(m.Attachments) > 0 {
+					for _, attachment := range m.Attachments {
+						if attachment.ContentType == "image/png" || attachment.ContentType == "image/jpeg" {
+							imagesUrls = append(imagesUrls, attachment.URL)
+						}
 					}
 				}
+
 				completion, err := gpt.CreateCompletion(m.Content, imagesUrls)
 				if err != nil {
 					app.logger.Printf("Error creating completion: %v", err)
@@ -106,6 +110,7 @@ func (app *application) listenBotMessage(s *discordgo.Session, m *discordgo.Mess
 				} else {
 					s.ChannelMessageSend(m.ChannelID, completion)
 				}
+				app.logger.Printf("Completion Ended")
 				break
 			}
 		}
