@@ -245,6 +245,7 @@ function App({ script }: { script: string }) {
           )}>
         </DialogTrigger>
         <DialogContent>
+          <Portal useShadow={true}>
           <DialogHeader class="gochat-flex gochat-items-center gochat-justify-between">
             <DialogTitle class="gochat-text-lg gochat-font-semibold">Chat</DialogTitle>
           </DialogHeader>
@@ -263,6 +264,7 @@ function App({ script }: { script: string }) {
               </TextFieldRoot>
             </div>
           </DialogDescription>
+          </Portal>
         </DialogContent>
       </Dialog>
     </Portal>
