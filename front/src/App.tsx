@@ -1,4 +1,4 @@
-import { createEffect, createSignal, Index, onMount } from "solid-js";
+import { createEffect, createSignal, Index, JSX, onMount } from "solid-js";
 import { fixEncoding, getMessages, getWebhook, processMessage, sendMessage, websocket } from "./utils/api";
 import { DiscordMessage, Mention } from "./message";
 import {
@@ -26,6 +26,7 @@ import {
   CarouselItem,
 } from "./components/ui/carousel";
 import { DialogTriggerProps } from "@kobalte/core/dialog";
+import { Portal } from "solid-js/web";
 
 function ContentWithEmoji({ content, mentioned }: { content: string, mentioned: Mention[] }) {
   const emojiRegex = /<a?:\w+:\d+>/g;
@@ -101,12 +102,12 @@ function Message(props: DiscordMessage) {
                   return (
                     <CarouselItem data-index={index}>
                       <Dialog>
-                        <DialogTrigger as={(props) => <img src={attachment().url} class="gochat-rounded-lg gochat-object-cover gochat-aspect-[16/9]" alt={attachment().filename} height={300} width={200} {...props} />} />
+                        <DialogTrigger as={(props: DialogTriggerProps<HTMLImageElement>) => <img src={attachment().url} class="gochat-rounded-lg gochat-object-cover gochat-aspect-[16/9]" alt={attachment().filename} height={300} width={200} {...props} />} />
                         <DialogContent>
                           <DialogTitle>{attachment().filename}</DialogTitle>
                           <DialogDescription>
-                          <img src={attachment().url} class="gochat-rounded-lg gochat-object-cover gochat-aspect-auto" alt={attachment().filename} style={{ "max-width": "80%" }} />
-                        </DialogDescription>
+                            <img src={attachment().url} class="gochat-rounded-lg gochat-object-cover gochat-aspect-auto" alt={attachment().filename} style={{ "max-width": "80%" }} />
+                          </DialogDescription>
                         </DialogContent>
                       </Dialog>
                     </CarouselItem>
@@ -219,50 +220,52 @@ function App({ script }: { script: string }) {
     };
   }, [channelId]);
   return (
-    <Dialog preventScroll={true} modal={true}>
-      <DialogTrigger onClick={scrollToBottom}
-        as={(props: DialogTriggerProps) => (
-          <div {...props} style={{
-            bottom: "50px",
-            background: "white",
-            position: "fixed",
-            right: "10px",
-            padding: "5px",
-            "border-radius": "50%",
-            border: "1px solid black",
-          }}>
-            <svg
-              width={48}
-              color="black"
-              height={48}
-              xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M10 3H14C18.4183 3 22 6.58172 22 11C22 15.4183 18.4183 19 14 19V22.5C9 20.5 2 17.5 2 11C2 6.58172 5.58172 3 10 3Z">
-              </path>
-            </svg>
-          </div>
-        )}>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader class="gochat-flex gochat-items-center gochat-justify-between">
-          <DialogTitle class="gochat-text-lg gochat-font-semibold">Chat</DialogTitle>
-        </DialogHeader>
-        <DialogDescription class="gochat-text-sm gochat-container gochat-mx-auto gochat-p-4 gochat-max-w-lg">
-          {errored() ? <div class="gochat-text-red-500">An error occured</div> : null}
-          {username() !== "" ? <div id="chat-box" style={{ "max-height": "800px", overflow: "auto" }}>
-            <Index each={messages()}>
-              {(message) => (
-                <Message {...message()} data-index={message().id} />
-              )}
-            </Index>
-          </div> : null}
-          <div class="gochat-mt-4">
-            <TextFieldRoot class="gochat-flex gochat-items-center gochat-space-x-2">
-              <TextField type="text" placeholder={username() ? "Send message" : "Set  Username"} onInput={(e) => setMessage(e.currentTarget.value)} value={message()} /> <Button onClick={send}>Send</Button>
-            </TextFieldRoot>
-          </div>
-        </DialogDescription>
-      </DialogContent>
-    </Dialog>
+    <Portal useShadow={true}>
+      <Dialog preventScroll={true} modal={true}>
+        <DialogTrigger onClick={scrollToBottom}
+          as={(props: DialogTriggerProps<HTMLDivElement>) => (
+            <div {...props} style={{
+              bottom: "50px",
+              background: "white",
+              position: "fixed",
+              right: "10px",
+              padding: "5px",
+              "border-radius": "50%",
+              border: "1px solid black",
+            }}>
+              <svg
+                width={48}
+                color="black"
+                height={48}
+                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M10 3H14C18.4183 3 22 6.58172 22 11C22 15.4183 18.4183 19 14 19V22.5C9 20.5 2 17.5 2 11C2 6.58172 5.58172 3 10 3Z">
+                </path>
+              </svg>
+            </div>
+          )}>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader class="gochat-flex gochat-items-center gochat-justify-between">
+            <DialogTitle class="gochat-text-lg gochat-font-semibold">Chat</DialogTitle>
+          </DialogHeader>
+          <DialogDescription class="gochat-text-sm gochat-container gochat-mx-auto gochat-p-4 gochat-max-w-lg">
+            {errored() ? <div class="gochat-text-red-500">An error occured</div> : null}
+            {username() !== "" ? <div id="chat-box" style={{ "max-height": "800px", overflow: "auto" }}>
+              <Index each={messages()}>
+                {(message) => (
+                  <Message {...message()} data-index={message().id} />
+                )}
+              </Index>
+            </div> : null}
+            <div class="gochat-mt-4">
+              <TextFieldRoot class="gochat-flex gochat-items-center gochat-space-x-2">
+                <TextField type="text" placeholder={username() ? "Send message" : "Set  Username"} onInput={(e) => setMessage(e.currentTarget.value)} value={message()} /> <Button onClick={send}>Send</Button>
+              </TextFieldRoot>
+            </div>
+          </DialogDescription>
+        </DialogContent>
+      </Dialog>
+    </Portal>
   );
 }
 
