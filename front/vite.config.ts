@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
-import tailwindcss from 'tailwindcss';
 
 // import devtools from 'solid-devtools/vite';
 import legacy from '@vitejs/plugin-legacy';
@@ -16,27 +15,23 @@ export default defineConfig({
     legacy({
       targets: ['defaults', 'not IE 11'],
     }),
-    cssInjectedByJsPlugin(),
     solidPlugin(),
   ],
-  css: {
-    postcss: {
-      plugins: [tailwindcss()],
-    },
-  },
   server: {
     port: 3001,
   },
   build: {
+
     rollupOptions: {
       output: {
         compact: true,
         entryFileNames: "bundle.js",
+        esModule: true,
       },
       input: {
         main: 'src/index.tsx',
       },
     },
-    target: 'esnext',
+    target: "module"
   },
 });

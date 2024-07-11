@@ -1,9 +1,10 @@
-import { DiscordMessage } from "../message";
-
+import { APIMessage, APIStickerItem, APIUser, StickerFormatType } from "discord-api-types/v10"
 export function websocket(channelId: string) {
   const ws = new WebSocket(`wss://tchat.ketsuna.com/channels/${channelId}/gateway`);
   return ws;
 }
+
+const discordCDN = "https://cdn.discordapp.com";
 
 export async function sendMessage(url: string, message: string, username: string) {
   const response = await fetch(url, {
@@ -19,7 +20,18 @@ export async function sendMessage(url: string, message: string, username: string
   return response.json();
 }
 
-export async function getMessages(channelId: string): Promise<DiscordMessage[]|false>{
+export function getAvatar(userAPI: APIUser) {
+  if (!userAPI.avatar) return `${discordCDN}/embed/avatars/${Number(userAPI.discriminator) % 5}.png`;
+  return `${discordCDN}/avatars/${userAPI.id}/${userAPI.avatar}.${userAPI.avatar?.startsWith("a_") ? "gif" : "png"}`;
+}
+
+export function getSticker(sticker: APIStickerItem){
+  if(sticker.format_type === StickerFormatType.Lottie) return `${discordCDN}/stickers/${sticker.id}.png`;
+  if(sticker.format_type === StickerFormatType.GIF) return `https://media.discordapp.net/stickers/${sticker.id}.gif`;
+  return `${discordCDN}/stickers/${sticker.id}.${sticker.format_type === StickerFormatType.PNG ? "png" : "apng"}`;
+}
+
+export async function getMessages(channelId: string): Promise<APIMessage[]|false>{
   const response = await fetch(`https://tchat.ketsuna.com/channels/${channelId}/messages`);
   if(response.ok){
   return response.json();
