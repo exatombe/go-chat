@@ -1,4 +1,4 @@
-import { APIMessage, APIStickerItem, APIUser, StickerFormatType } from "discord-api-types/v10"
+import { APIMessage, APIStickerItem, APIUser, StickerFormatType } from "../types/discord";
 export function websocket(channelId: string) {
   const ws = new WebSocket(`wss://tchat.ketsuna.com/channels/${channelId}/gateway`);
   return ws;

@@ -1,10 +1,10 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from "vite";
 import solidPlugin from 'vite-plugin-solid';
-import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 
 // import devtools from 'solid-devtools/vite';
-import legacy from '@vitejs/plugin-legacy';
-
+/**
+ * @type {import('vite').UserConfig}
+ */
 export default defineConfig({
   plugins: [
     /*
@@ -12,9 +12,6 @@ export default defineConfig({
     For more info see https://github.com/thetarnav/solid-devtools/tree/main/packages/extension#readme
     */
     // devtools(),
-    legacy({
-      targets: ['defaults', 'not IE 11'],
-    }),
     solidPlugin(),
   ],
   server: {
@@ -32,6 +29,5 @@ export default defineConfig({
         main: 'src/index.tsx',
       },
     },
-    target: "module"
   },
 });

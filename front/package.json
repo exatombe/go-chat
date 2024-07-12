@@ -4,12 +4,13 @@
   "description": "",
   "scripts": {
     "start": "vite",
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "vite --force",
+    "build": "npx cross-env VITE_CJS_TRACE=true vite build",
     "serve": "vite preview"
   },
   "license": "MIT",
   "devDependencies": {
+    "@types/markdown-it-emoji": "^3.0.1",
     "@vitejs/plugin-legacy": "^5.4.1",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.39",
@@ -18,8 +19,11 @@
     "vite-plugin-solid": "^2.8.2"
   },
   "dependencies": {
+    "@types/markdown-it": "^14.1.1",
+    "cheerio": "^1.0.0-rc.12",
     "clsx": "^2.1.1",
-    "discord-api-types": "^0.37.92",
+    "markdown-it": "^14.1.0",
+    "markdown-it-emoji": "^3.0.0",
     "solid-js": "^1.8.11",
     "vite-plugin-css-injected-by-js": "^3.5.1"
   }

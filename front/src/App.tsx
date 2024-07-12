@@ -2,7 +2,7 @@ import { createEffect, createSignal, Index } from "solid-js";
 import { getMessages, getWebhook, processMessage, sendMessage, websocket } from "./utils/api";
 import ChatSVG from "./svgs/chat";
 import CloseSVG from "./svgs/close";
-import { APIMessage } from "discord-api-types/v10";
+import { APIMessage } from "./types/channel";
 import Message from "./components/Message";
 
 
@@ -66,7 +66,6 @@ function App({ script }: { script: string }) {
     ws.onmessage = (event) => {
       try {
         const data = processMessage(event.data) as APIMessage;
-        console.log(data);
         // We need to update the message if the id is already in the list
         const list = messages();
         const index = list.findIndex((message) => message.id === data.id);

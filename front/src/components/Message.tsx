@@ -1,4 +1,4 @@
-import { APIMessage, MessageType } from "discord-api-types/v10";
+import { APIMessage, MessageType } from "../types/discord";
 import ContentFormatted from "./ContentFormatted";
 import { fixEncoding, getAvatar, getSticker } from "../utils/api";
 import { Index } from "solid-js";
