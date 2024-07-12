@@ -20,8 +20,8 @@
   },
   "dependencies": {
     "@types/markdown-it": "^14.1.1",
-    "cheerio": "^1.0.0-rc.12",
     "clsx": "^2.1.1",
+    "highlight.js": "^11.10.0",
     "markdown-it": "^14.1.0",
     "markdown-it-emoji": "^3.0.0",
     "solid-js": "^1.8.11",

@@ -6,11 +6,37 @@ import Mention from "./Mentions";
 
 export default function Message(props: APIMessage) {
     return (
-      <div style={{ "display": "flex", "align-items": "center", "margin-top": "10px" }}>
-        <img src={getAvatar(props.author)} alt="avatar" style={{ "width": "50px", "height": "50px", "border-radius": "50%" }} />
+      <div>
+        {props.type === MessageType.Default ?
         <div style={{
-          "margin-left": "10px",
+          display: "flex",
+          "flex-direction": "row",
+          "gap": "5px",
+        }}>
+        <img src={getAvatar(props.author)} alt="avatar" style={{ "width": "50px", "height": "50px", "border-radius": "50%" }} />
+          <div style={{
+            "display": "flex",
+            "align-items": "center",
+            "gap": "5px",
+          }}>
+            <Mention user={props.author} />
+            {props.author.bot ? <div style={{
+              "background": "rgba(0, 0, 0, 0.1)",
+              "padding": "2px",
+              "border-radius": "4px",
+              "color": "black",
+              "font-weight": "bold",
+              "font-size": "0.8rem",
+            }}>{props.webhook_id ? "WEBSITE" : "Bot"}</div> : null}
+          </div>   <span style={{
+            "font-size": "0.8rem",
+            "color": "gray",
+          }}>{new Date(props.timestamp).toLocaleTimeString()}</span>
+        </div> : null}
+        <div style={{
+          "margin-left": "50px",
           "display": "flex",
+          "margin-top": "-1.5em",
           "justify-content": "space-between",
           "flex-direction": "column",
           "align-items": "flex-start",
@@ -22,14 +48,11 @@ export default function Message(props: APIMessage) {
           "border-radius": "4px",
           "color": "black",
           "font-weight": "bold",
+          "margin-top": "10px",
+          "margin-bottom": "-15px",
           "font-size": "0.8rem",
-        }}>Réponse à <Mention user={props.referenced_message?.author} /> <ContentFormatted content={(props.referenced_message.sticker_items && props.referenced_message.sticker_items?.length > 1) ? "attachment" : props.referenced_message.content.slice(0,65)} message={props.referenced_message}/>
+        }}>Réponse à <Mention user={props.referenced_message?.author} />
         </div> : null}
-          <h3 style={{
-            "margin": "0",
-            "font-size": "1.2rem",
-            "font-weight": "bold",
-          }}>{props.author.username}</h3>
           {props.pinned ? <div style={{
             "background": "rgba(0, 0, 0, 0.1)",
             "padding": "2px",
@@ -37,6 +60,8 @@ export default function Message(props: APIMessage) {
             "color": "black",
             "font-weight": "bold",
             "font-size": "0.8rem",
+            "margin-top": "10px",
+            "margin-bottom": "-15px",
           }}>Pinned Message</div> : null}
           {props.type === MessageType.ChannelPinnedMessage ? <div style={{
             "background": "rgba(0, 0, 0, 0.1)",
@@ -45,7 +70,8 @@ export default function Message(props: APIMessage) {
             "color": "black",
             "font-weight": "bold",
             "font-size": "0.8rem",
-          }}>[SYSTEM] <Mention user={props.author} /> a épinglé un <code style={{
+            "margin": "30px 0",
+          }}><Mention user={props.author} /> a épinglé un <code style={{
             "background": "rgba(0, 0, 0, 0.1)",
             "padding": "2px",
             "border-radius": "4px",
@@ -57,6 +83,7 @@ export default function Message(props: APIMessage) {
             "display": "flex",
             "gap": "10px",
             "flex-wrap": "wrap",
+            "margin-top": "20px",
           }}>
             <Index each={props.sticker_items}>
               {(sticker, index) => (
@@ -70,7 +97,7 @@ export default function Message(props: APIMessage) {
             </Index>
             </div> : null}
           {props.content ? <ContentFormatted content={fixEncoding(props.content)} message={props} /> : null}
-          {props.attachments.length > 0 ? (<div style={{ "display": "flex", "flex-direction": "column", "gap": "10px" }}>
+          {props.attachments.length > 0 ? (<div style={{ "display": "flex", "flex-direction": "column", "gap": "10px", "margin-top": "20px" }}>
             <div style={{ "display": "flex", "gap": "10px", "flex-wrap": "wrap" }}>
               <Index each={props.attachments}>
                 {(attachment, index) => {
