@@ -3,26 +3,19 @@ import MarkdownIt from "markdown-it";
 
 const md = MarkdownIt({
     html: false,
-    langPrefix: 'language-',
     linkify: true,
 });
-
-md.options.highlight = (str, lang) => {
-    if (lang && md.utils.escapeHtml(lang) !== lang) {
-        return `<pre class="language-${lang}"><code class="language-${lang}">${md.utils.escapeHtml(str)}</code></pre>`;
-    }else{
-        return `<pre class="language-"><code class="language-">${md.utils.escapeHtml(str)}</code></pre>`;
-    }
-};
 
 md.linkify.set({ fuzzyEmail: false });
 
 md.renderer.renderAttrs = (token) => {
     if (token.type === "link_open") {
         return ` target="_blank" style="color: #7289da; text-decoration: none; cursor: pointer;" href="${token.attrGet("href")}"`;
+    } else if (token.type === "image") {
+        return ` style="display: flex; align-items: flex-start; height: 100%;" src="${token.attrGet("src")}" alt="${token.attrGet("alt")}"`;
     }
     // for any other token type return the default renderer
-    return ` ${token.attrs?.map(([key, value]) => `${key}="${value}"`).join(" ") ?? ""}`;
+    return ` ${token.attrs?.map(([key, value]) => `${key}="${value}"`).join(" ") ?? ""} style="color: black;"`;
 };
 
 

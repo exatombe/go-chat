@@ -125,6 +125,7 @@ function App({ script }: { script: string }) {
             <h2 style={{
               "margin": "0",
               "font-size": "1.5rem",
+              color: "black",
               "font-weight": "bold",
             }}>Chat</h2>
             <div

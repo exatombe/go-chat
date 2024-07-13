@@ -36,7 +36,7 @@ export default function Message(props: APIMessage) {
         <div style={{
           "margin-left": "50px",
           "display": "flex",
-          "margin-top": "-1.5em",
+          "margin-top": "-1em",
           "justify-content": "space-between",
           "flex-direction": "column",
           "align-items": "flex-start",
